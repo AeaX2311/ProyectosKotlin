@@ -1,30 +1,25 @@
 package com.example.simondice
 
-import android.graphics.drawable.Icon
+import android.content.Context
 import android.media.MediaPlayer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.simondice.models.Juego
 import com.example.simondice.ui.theme.*
 import kotlinx.coroutines.delay
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
+import com.example.simondice.components.*
 
 class MainActivity : ComponentActivity() {
     private val juego = Juego("Alan")
@@ -42,6 +37,8 @@ class MainActivity : ComponentActivity() {
             var cadenaJuego by remember { mutableStateOf("") } //Secuencia String del patron automatico
             var respuestaJugador by remember { mutableStateOf("") } //Secuencia String de clicks por usuario
 
+            var padFondo by remember { mutableStateOf(Black) } //Fondo para el pad, cambia cuando termina un nivel
+
             SimonDiceTheme {
 
                 Surface(
@@ -50,13 +47,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     LaunchedEffect(contadorIndice) {
                         if(ejecutandoJuego) { //Si se esta ejecutando el patron automatico
-                            when(cadenaJuego[contadorIndice]) { //Ejecuta el sonido del boton
-                                '1' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p1))
-                                '2' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p2))
-                                '3' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p3))
-                                '4' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p4))
-                                else -> {}
-                            }
+                            determinarAudioEjecutar(cadenaJuego[contadorIndice], applicationContext) //Ejecuta el sonido del boton
                             delay(400)//Esperate un poco. En este punto el boton esta encendido
                             efectoParpadeo = true //Apaga el boton
                             delay(400) //Dejalo apagado un rato
@@ -75,41 +66,33 @@ class MainActivity : ComponentActivity() {
                     LaunchedEffect(respuestaJugador) {
                         if(respuestaJugador.isNotEmpty()) { //Si hay al menos un caracter en la respuesta (clicks)
                             efectoParpadeo = false //Enciende el boton
-
-                            when(respuestaJugador.last()) { //Ejecuta la musica
-                                '1' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p1))
-                                '2' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p2))
-                                '3' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p3))
-                                '4' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p4))
-                                else -> {}
-                            }
+                            determinarAudioEjecutar(respuestaJugador.last(), applicationContext) //Ejecutar sonido
                             delay(400) //Esperate un rato jeje
                             efectoParpadeo = true //Apaga el boton
 
                             if(respuestaJugador.length >= cadenaJuego.length) { //Ultima iteracion, el jugador ya no debe ingresar mas cosas
                                 esperandoRespuestaJugador = false //Ya no se aceptan clicks
+                                ejecutandoJuego = false //Hasta que le de en iniciar
+                                efectoParpadeo = false //Cuando inicie la secuencia automatica, se encienda el boton
+                                contadorIndice = -1 //El patron hasta que le de click en iniciar
 
-                                //validar si la respuesta es la misma a la cadena original
+                                //Validar si la respuesta es la misma a la cadena original
                                 if(respuestaJugador == cadenaJuego) { //Ganó
                                     juego.nivelCompletado() //Siguiente nivel
-                                    ejecutandoJuego = false //Hasta que le de en iniciar
-                                    efectoParpadeo = false //Cuando inicie la secuencia automatica, se encienda el boton
-                                    contadorIndice = -1 //El patron hasta que le de click en iniciar
+                                    padFondo = NivelCompletado //Muestra en verde
                                 } else {
-                                    juego.nivelFallado() //Repetir nivel
-                                    ejecutandoJuego = true //Repetir patron
-                                    delay(1500) //Esperate un rato, que se de cuenta que perdio
-                                    efectoParpadeo = false //Cuando inicie la secuencia automatica, se encienda el boton
-                                    contadorIndice = 0 //Volvemos a mostrar el patron
+                                    juego.nivelFallado() //Reiniciar hasta nivel cero
+                                    padFondo = NivelFallido //Muestra en rojo
                                 }
 
+                                delay(800) //Esperate un rato para mostrar el color
+                                padFondo = Black //Apaga el color
                                 respuestaJugador = "" //Termino de dar todos los clicks, reinicia la entrada de clicks
                             }
                         }
                     }
 
                     Column {
-
                         Box(){
                             Text(text = "Nivel ${juego.jugador.nivel}", color = Color.White, modifier = Modifier.fillMaxWidth().background(
                                 FondoSecundario), textAlign = TextAlign.Center, fontSize = 47.sp)
@@ -118,7 +101,7 @@ class MainActivity : ComponentActivity() {
                                 onStart = {
                                     ejecutandoJuego = true
                                     esperandoRespuestaJugador = false
-                                    juego.nivelFallado()
+                                    juego.repetirNivel()
                                     contadorIndice = 0
                                 },
                                 Icons.Filled.Refresh
@@ -128,7 +111,7 @@ class MainActivity : ComponentActivity() {
                         Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
                         Pad(if(contadorIndice != -1) cadenaJuego[contadorIndice] else if(respuestaJugador.isNotEmpty()) respuestaJugador.last() else '0', efectoParpadeo, esperandoRespuestaJugador, accionClick = {
                             respuestaJugador += it //Agregar a la cadena, el ID del boton clickeado
-                        })
+                        },padFondo)
                         Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
 
                         Row(
@@ -150,9 +133,6 @@ class MainActivity : ComponentActivity() {
                         Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
                         Text(text = "" + juego.jugador.puntuacion + " Puntos", color = Color.White, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center, fontSize = 35.sp)
                         Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
-
-//                        Text(text = "Cadena: $cadenaJuego", color = Color.White)
-//                        Text(text = "Respuesta: $respuestaJugador", color = Color.White)
                     }
                 }
             }
@@ -160,132 +140,26 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Preview
-@Composable
-fun Preview() {
-//    Pad('1', efectoParpadeo = false, esperandoRespuestaJugador = true, accionClick = {})
-//    MiBotonColor(true, VerdeOn, VerdeOff,false,{},'1',-45f,-90f)
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Fondo
-    ) {
-        Column {
-            Box(){
-                Text(text = "Nivel 1", color = Color.White, modifier = Modifier.fillMaxWidth().background(
-                    FondoSecundario), textAlign = TextAlign.Center, fontSize = 35.sp)
-                BotonIcono(
-                    habilitado = true,
-                    onStart = {
-                    },
-                    Icons.Filled.Refresh
-                )
-            }
-
-            Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
-            Pad('1', efectoParpadeo = false, esperandoRespuestaJugador = true, accionClick = {})
-            Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
-
-            Row(
-                horizontalArrangement = Arrangement.Center
-            ) {
-                MiBotonAccion(
-                    texto = "Iniciar",
-                    true,
-                    onStart = {
-                    }
-                )
-            }
-        }
+/**
+ * Ejecuta un audio en base al boton que se le de click o se este ejecutando
+ */
+private fun determinarAudioEjecutar(indice:Char, applicationContext: Context) {
+    when(indice) { //Ejecuta la musica
+        '1' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p1))
+        '2' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p2))
+        '3' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p3))
+        '4' -> iniciarAudio(MediaPlayer.create(applicationContext, R.raw.p4))
+        else -> {}
     }
 }
 
-
-@Composable
-fun BotonIcono(habilitado:Boolean, onStart: () -> Unit, icono:ImageVector) {
-    if(habilitado) {
-        IconButton(
-
-            enabled = habilitado,
-            modifier = Modifier.background(FondoSecundario)
-                .size(55.dp),
-            onClick = { onStart() }
-        ) {
-            Icon(
-                imageVector = icono,
-                contentDescription = null,
-                tint = Color.White
-            )
-        }
-    }
-}
-
-@Composable
-fun MiBotonAccion(texto:String, habilitado:Boolean, onStart: () -> Unit){
-    Button (
-        enabled = habilitado,
-        onClick = { onStart() },
-    ) {
-        Text(text = texto)
-    }
-}
-
-@Composable
-fun MiBotonColor(encendido: Boolean, colorOn: Color, colorOff:Color, esperandoRespuestaJugador:Boolean, accionClick: (indice:Char) -> Unit, indice:Char) {
-    val intSrc = remember { MutableInteractionSource() }
-
-    Box(
-        modifier = Modifier
-            .size(100.dp)
-            .padding(4.dp)
-            .border(200.dp, (if (encendido) colorOn else colorOff), RoundedCornerShape(20.dp))
-            .clickable(
-                interactionSource = intSrc,
-                indication = null
-            ) {
-                if (!encendido && esperandoRespuestaJugador) {
-                    accionClick(indice)
-                }
-            },
-        contentAlignment = Alignment.Center,
-
-    ) {
-    }
-}
-
-@Composable
-fun Pad(numEncendido:Char, efectoParpadeo:Boolean, esperandoRespuestaJugador:Boolean, accionClick: (indice:Char) -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Row(
-            modifier = Modifier.width(218.dp)
-                .height(109.dp)
-                .background(Black),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Bottom
-        ) {
-            MiBotonColor(encendido = numEncendido == '1' && !efectoParpadeo, colorOn = VerdeOn, colorOff = VerdeOff, esperandoRespuestaJugador, accionClick, '1')
-            MiBotonColor(encendido = numEncendido == '2' && !efectoParpadeo, colorOn = RojoOn, colorOff = RojoOff, esperandoRespuestaJugador, accionClick, '2')
-        }
-
-        Row(
-            modifier = Modifier.width(218.dp)
-                .height(109.dp)
-                .background(Black),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.Top
-        ) {
-            MiBotonColor(encendido = numEncendido == '3' && !efectoParpadeo, colorOn = AmarilloOn, colorOff = AmarilloOff, esperandoRespuestaJugador, accionClick, '3')
-            MiBotonColor(encendido = numEncendido == '4' && !efectoParpadeo, colorOn = AzulOn, colorOff = AzulOff, esperandoRespuestaJugador, accionClick, '4')
-        }
-    }
-}
-
+/**
+ * Ejecuta una salida de audio, evitando que se sobrecargue cuando se ejecuta multiples veces
+ */
 private fun iniciarAudio(mp: MediaPlayer) {
     if(!mp.isPlaying) {
         mp.start()
-    } else {
+    } else { //Detener la ejecucion actual
         mp.pause();
         mp.seekTo(0);
         mp.start()

@@ -22,3 +22,5 @@ val AzulOn = Color(0xFF0A6BD0)
 val AzulOff = Color(0xFF002539)
 
 val Black = Color(0xFF000000)
+val NivelCompletado = Color(0xFF01963F)
+val NivelFallido = Color(0xFFE50614)

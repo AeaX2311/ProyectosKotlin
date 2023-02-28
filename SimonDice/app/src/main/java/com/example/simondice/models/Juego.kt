@@ -5,9 +5,6 @@ import kotlin.random.Random
 class Juego(nombre: String) {
     //Constantes sobre las reglas de mi juego
     private val cantidadTotalBotones = 4
-//    var juegoIniciado = false
-//    var cadenaJuego = ""
-
 
     //Variables que influyen en el juego
     //TODO: POR AHORA EL JUGADOR ES GLOBAL. SOLO POR PRUEBAS
@@ -18,7 +15,6 @@ class Juego(nombre: String) {
 //     * @param nombre El nombre del jugador que inicia el juego
      */
     fun iniciarJuego() :String {
-//        juegoIniciado = true
         return generarCadenaJuego()
     }
 
@@ -69,7 +65,15 @@ class Juego(nombre: String) {
      * Se ejecuta cuando un nivel se finaliza sin exito
      */
     fun nivelFallado() {
-        //Menos cinco puntos al jugador
+        //Reiniciar a nivel cero
+        jugador.puntuacion = 0
+        jugador.nivel = 1
+    }
+
+    /**
+     * El usuario le da click al boton de repetir nivel, se le quitan 5 puntos
+     */
+    fun repetirNivel() {
         jugador.puntuacion -= 5
     }
 }
