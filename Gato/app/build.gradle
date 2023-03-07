@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.aeax.simondice'
+    namespace 'com.aeax.gato'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.aeax.simondice"
+        applicationId "com.aeax.gato"
         minSdk 24
         targetSdk 33
         versionCode 1
