@@ -66,6 +66,89 @@ val states = arrayListOf(
     Pair("NE", "Nacido en el extranjero")
 )
 
+val reservedWords = arrayListOf(
+    "BACA",
+    "LOCO",
+    "BAKA",
+    "LOKA",
+    "BUEI",
+    "LOKO",
+    "BUEY",
+    "MAME",
+    "CACA",
+    "MAMO",
+    "CACO",
+    "MEAR",
+    "CAGA",
+    "MEAS",
+    "CAGO",
+    "MEON",
+    "CAKA",
+    "MIAR",
+    "CAKO",
+    "MION",
+    "COGE",
+    "MOCO",
+    "COGI",
+    "MOKO",
+    "COJA",
+    "MULA",
+    "COJE",
+    "MULO",
+    "COJI",
+    "NACA",
+    "COJO",
+    "NACO",
+    "COLA",
+    "PEDA",
+    "CULO",
+    "PEDO",
+    "FALO",
+    "PENE",
+    "FETO",
+    "PIPI",
+    "GETA",
+    "PITO",
+    "GUEI",
+    "POPO",
+    "GUEY",
+    "PUTA",
+    "JETA",
+    "PUTO",
+    "JOTO",
+    "QULO",
+    "KACA",
+    "RATA",
+    "KACO",
+    "ROBA",
+    "KAGA",
+    "ROBE",
+    "KAGO",
+    "ROBO",
+    "KAKA",
+    "RUIN",
+    "KAKO",
+    "SENO",
+    "KOGE",
+    "TETA",
+    "KOGI",
+    "VACA",
+    "KOJA",
+    "VAGA",
+    "KOJE",
+    "VAGO",
+    "KOJI",
+    "VAKA",
+    "KOJO",
+    "VUEI",
+    "KOLA",
+    "VUEY",
+    "KULO",
+    "WUEI",
+    "LILO",
+    "WUEY"
+)
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
@@ -155,11 +238,13 @@ fun generateCurp(name: String, lastNameP: String, lastNameM: String, birthDate: 
     curp += findInternalConsonant(lastNameM) //Primera consonante interna del apellido materno
     curp += findInternalConsonant(name) //Primera consonante interna del nombre
 
-    curp += "0" //Homoclave
+    curp += if (date.year < 2000) "1" else "A"//Agrega un 1 si es menor de 2000, A si es mayor (Homoclave)
 
-    curp += generateVrfyDigit(curp) //Digito verificador
+    curp = curp.uppercase() //Pasar a mayusculas
 
-    return curp.uppercase() //En mayusculas to-do
+    curp += generateVerifyDigit(curp) //Digito verificador
+
+    return curp.replace("Ñ", "X") //Reemplaza las Ñ por X
 }
 
 fun findVocal(lastNameP: String): String {
@@ -181,21 +266,22 @@ fun findInternalConsonant(lastNameP: String): String {
     return "X" //No deberia llegar jamas
 }
 
-fun generateVrfyDigit(curp: String): String {
+fun generateVerifyDigit(curp: String): String {
     val letters = "0123456789ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
     var sum = 0
-    var digit = 0
+    var digit: Int
+
     for (i in curp.indices) {
         digit = letters.indexOf(curp[i])
         sum += digit * (18 - i)
     }
-    return letters[sum % 10].toString()
+
+    val mod = sum % 10
+    return if (mod == 0) "0" else (10 - mod).toString()
 }
 
 fun deleteInconvenientWords(curp: String) :String {
-
-
-    return curp
+    return if(reservedWords.contains(curp.uppercase())) { curp[0] + "X" + curp.substring(2, curp.length) } else curp
 }
 
 @Composable
