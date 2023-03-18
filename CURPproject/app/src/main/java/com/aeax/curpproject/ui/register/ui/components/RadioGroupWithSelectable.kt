@@ -19,7 +19,7 @@ fun RadioGroupWithSelectable(
         items.forEach { item ->
             LabelledRadioButton(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.8f)
                     .selectable(
                         selected = item.first == selection,
                         onClick = { onItemClick(item.first) },
