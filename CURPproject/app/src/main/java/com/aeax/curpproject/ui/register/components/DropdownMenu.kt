@@ -1,4 +1,4 @@
-package com.aeax.curpproject.ui.register.ui.components
+package com.aeax.curpproject.ui.register.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package com.aeax.curpproject.ui.register.data
+package com.aeax.curpproject.data
 
 val GENDER_LIST = arrayListOf(
     Pair("M", "Mujer"),

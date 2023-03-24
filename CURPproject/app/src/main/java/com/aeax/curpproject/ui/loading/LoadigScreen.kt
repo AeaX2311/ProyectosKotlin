@@ -17,13 +17,14 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.aeax.curpproject.ui.theme.CURPprojectTheme
+import com.aeax.curpproject.ui.theme.PrimaryBackground
 import kotlinx.coroutines.delay
 
 @Composable
 fun LoadingScreen(
     modifier: Modifier = Modifier,
     circleSize: Dp = 25.dp,
-    circleColor: Color = MaterialTheme.colors.primary,
+    circleColor: Color = PrimaryBackground,
     spaceBetween: Dp = 10.dp,
     travelDistance: Dp = 20.dp
 ) {

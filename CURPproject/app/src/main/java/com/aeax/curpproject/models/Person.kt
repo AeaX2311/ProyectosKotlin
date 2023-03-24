@@ -1,4 +1,4 @@
-package com.aeax.curpproject.ui.register.models
+package com.aeax.curpproject.models
 
 data class Person (
     var name:String = "",

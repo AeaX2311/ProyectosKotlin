@@ -1,12 +1,11 @@
-package com.aeax.curpproject.ui.register.ui
+package com.aeax.curpproject.ui.register.wizardregister
 
 import android.os.Build
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.infiniteRepeatable
+import com.aeax.curpproject.models.Person
 import androidx.lifecycle.ViewModel
-import com.aeax.curpproject.ui.register.data.RESERVED_WORDS
-import com.aeax.curpproject.ui.register.models.FormStatus
-import com.aeax.curpproject.ui.register.models.Person
+import com.aeax.curpproject.data.RESERVED_WORDS
+import com.aeax.curpproject.ui.register.wizardregister.models.FormStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.text.Normalizer
@@ -15,14 +14,14 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.concurrent.timerTask
 
-class RegisterViewModel : ViewModel() {
-    private val REGEX_UNACCENTED = "\\p{InCombiningDiacriticalMarks}+".toRegex()
-
-    private val _uiPersonState = MutableStateFlow(Person())
-    val uiPersonState: StateFlow<Person> = _uiPersonState
+class WizardRegisterViewModel : ViewModel() {
+    private val regexUnaccented = "\\p{InCombiningDiacriticalMarks}+".toRegex()
 
     private val _uiFormStatusState = MutableStateFlow<FormStatus>(FormStatus.Init)
     val uiFormStatusState: StateFlow<FormStatus> = _uiFormStatusState
+
+    private val _uiPersonState = MutableStateFlow(Person())
+    val uiPersonState: StateFlow<Person> = _uiPersonState
 
     init {
         initState()
@@ -30,16 +29,7 @@ class RegisterViewModel : ViewModel() {
 
     private fun initState() {
         _uiFormStatusState.value = FormStatus.Loading
-        _uiPersonState.value = Person(
-            name = "ALAN ABIUD",
-            lastNameP = "CASTRO",
-            lastNameM = "CRUZ",
-            birthDate = "2001-11-23",
-            gender = "H",
-            state = "TS",
-            curp = ""
-        )
-        Timer().schedule(timerTask { _uiFormStatusState.value = FormStatus.Loaded }, 1200)
+        Timer().schedule(timerTask { _uiFormStatusState.value = FormStatus.NameScreen }, 1200)
     }
 
     fun setName(name: String) {
@@ -72,7 +62,21 @@ class RegisterViewModel : ViewModel() {
         validateAll()
     }
 
-    private fun validateAll() {
+    fun validateAll() {
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun onSubmitForm() {
+        when(_uiFormStatusState.value) {
+            FormStatus.Loaded -> _uiFormStatusState.value = FormStatus.NameScreen
+            FormStatus.NameScreen -> _uiFormStatusState.value = FormStatus.DateScreen
+            FormStatus.DateScreen -> _uiFormStatusState.value = FormStatus.GenderScreen
+            FormStatus.GenderScreen -> _uiFormStatusState.value = FormStatus.StateScreen
+            FormStatus.StateScreen -> { generateCurp() }
+//            FormStatus.Success -> _uiFormStatusState.value = FormStatus.NameScreen
+            else -> _uiFormStatusState.value = FormStatus.Error("Error inesperado", isError = true)
+        }
 
     }
 
@@ -158,6 +162,6 @@ class RegisterViewModel : ViewModel() {
 
     private fun CharSequence.unaccent(): String {
         val temp = Normalizer.normalize(this, Normalizer.Form.NFD)
-        return REGEX_UNACCENTED.replace(temp, "")
+        return regexUnaccented.replace(temp, "")
     }
 }

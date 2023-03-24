@@ -1,4 +1,4 @@
-package com.aeax.curpproject.ui.register.ui.components
+package com.aeax.curpproject.ui.register.components
 
 import android.app.DatePickerDialog
 import android.os.Build
