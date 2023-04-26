@@ -7,13 +7,18 @@ import kotlin.random.Random
 class GameManager : IGameManager {
     //Constantes sobre las reglas de mi juego
     private val cantidadTotalBotones = 4
-    private val game = Game("", 1, "")
+    private var game = Game("", 1, "")
+
+    override fun initGame() {
+        game = Game("", 1, "")
+    }
 
     /**
      * Inicializa el juego entero. Score y nivel 0.
      */
     override fun startGame() {
-        game.startGame()
+        //game = Game("", 1, "")
+//        game.startGame()
         buildSequence()
     }
 
@@ -24,7 +29,6 @@ class GameManager : IGameManager {
     override fun buildSequence() {
         game.sequence += Random.nextInt(1, cantidadTotalBotones + 1).toString()
     }
-
 
     /**
      * Se ejecuta cuando un nivel se finaliza con exito
@@ -44,11 +48,12 @@ class GameManager : IGameManager {
 
         return true
     }
+
     /**
      * Se ejecuta cuando un nivel se finaliza sin exito
      */
     override fun levelFailed() {
-        //TODO
+        game.startGame()
     }
 
     /**

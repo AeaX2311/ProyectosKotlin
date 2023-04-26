@@ -14,24 +14,26 @@ import com.aeax.smndice.ui.screens.game.GameViewModel
 import com.aeax.smndice.ui.screens.game.SmnDiceGameScreen
 import com.aeax.smndice.ui.theme.Fondo
 import com.aeax.smndice.ui.theme.SmnDiceTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val gameViewModel: GameViewModel by viewModels()
+//    private val gameViewModel: GameViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val gp = GlobalProvider(gameViewModel = gameViewModel)
+//            val gp = GlobalProvider(gameViewModel = gameViewModel)
 
             SmnDiceTheme {
-                CompositionLocalProvider(LocalGlobalProvider provides gp) {
+//                CompositionLocalProvider(LocalGlobalProvider provides gp) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
                         color = Fondo
                     ) {
                         SmnDiceGameScreen()
                     }
-                }
+//                }
             }
         }
     }

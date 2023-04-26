@@ -3,6 +3,7 @@ package com.aeax.smndice.domain.services.interfaces
 import com.aeax.smndice.domain.models.Game
 
 interface IGameManager {
+    fun initGame()
     fun startGame()
     fun buildSequence()
     fun levelCompleted()

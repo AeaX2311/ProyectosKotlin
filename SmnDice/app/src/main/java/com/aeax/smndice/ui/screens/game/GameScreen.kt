@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.aeax.smndice.R
 import com.aeax.smndice.domain.providers.LocalGlobalProvider
 import com.aeax.smndice.ui.components.*
@@ -22,23 +23,16 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun SmnDiceGameScreen() {
-    val gp = LocalGlobalProvider.current
-    val gameViewModel = gp.gameViewModel
+    val gameViewModel: GameViewModel = hiltViewModel()
     val context = LocalContext.current
-    val currentGame = gameViewModel.getGame()
 
+    val currentGame by remember { mutableStateOf(gameViewModel.getGame()) } //Datos del juego actual
     var contadorIndice by remember { mutableStateOf(-1) } //Del patron automatico
     var efectoParpadeo by remember { mutableStateOf(false) } //Boton encendido o apagado
-
     var ejecutandoJuego by remember { mutableStateOf(false) } //Ejecucion patron automatico
     var esperandoRespuestaJugador by remember { mutableStateOf(false) } //Ejecucion de clicks por usuario
-
-//    var cadenaJuego by remember { mutableStateOf("") } //Secuencia String del patron automatico
     var respuestaJugador by remember { mutableStateOf("") } //Secuencia String de clicks por usuario
-
     var padFondo by remember { mutableStateOf(Black) } //Fondo para el pad, cambia cuando termina un nivel
-
-
 
     LaunchedEffect(contadorIndice) {
         if (ejecutandoJuego) { //Si se esta ejecutando el patron automatico
@@ -80,15 +74,25 @@ fun SmnDiceGameScreen() {
                 //Validar si la respuesta es la misma a la cadena original
                 if (gameViewModel.validateAnswer(respuestaJugador)) { //Ganó
                     padFondo = NivelCompletado //Muestra en verde
+                    gameViewModel.levelCompleted()
                 } else {
                     padFondo = NivelFallido //Muestra en rojo
+                    gameViewModel.levelFailed()
                 }
 
                 delay(800) //Esperate un rato para mostrar el color
                 padFondo = Black //Apaga el color
                 respuestaJugador = "" //Termino de dar todos los clicks, reinicia la entrada de clicks
             } else if (!gameViewModel.validateAnswer(respuestaJugador)) {
+                esperandoRespuestaJugador = false //Ya no se aceptan clicks
+                ejecutandoJuego = false //Hasta que le de en iniciar
+                efectoParpadeo = false //Cuando inicie la secuencia automatica, se encienda el boton
+                contadorIndice = -1 //El patron hasta que le de click en iniciar
                 padFondo = NivelFallido //Muestra en rojo
+                gameViewModel.levelFailed()
+                delay(800) //Esperate un rato para mostrar el color
+                padFondo = Black //Apaga el color
+                respuestaJugador = "" //Termino de dar todos los clicks, reinicia la entrada de clicks
             }
         }
     }
@@ -144,14 +148,14 @@ fun SmnDiceGameScreen() {
             )
         }
 
-        Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
-        Text(
-            text = "" + currentGame.level + " Puntos",
-            color = Color.White,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontSize = 35.sp
-        )
+//        Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
+//        Text(
+//            text = "" + currentGame.level + " Puntos",
+//            color = Color.White,
+//            modifier = Modifier.fillMaxWidth(),
+//            textAlign = TextAlign.Center,
+//            fontSize = 35.sp
+//        )
         Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
     }
 }
