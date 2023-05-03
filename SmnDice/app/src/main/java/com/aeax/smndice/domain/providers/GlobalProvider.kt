@@ -1,11 +1,12 @@
 package com.aeax.smndice.domain.providers
 
 import androidx.compose.runtime.compositionLocalOf
-import com.aeax.smndice.ui.screens.game.GameViewModel
+import androidx.navigation.NavHostController
+import com.aeax.smndice.domain.repositories.ApiRepository
 
 data class GlobalProvider (
-    val gameViewModel: GameViewModel,
-
+    val navController: NavHostController,
+//    val apiRepository: ApiRepository
 )
 
 val LocalGlobalProvider = compositionLocalOf<GlobalProvider> {

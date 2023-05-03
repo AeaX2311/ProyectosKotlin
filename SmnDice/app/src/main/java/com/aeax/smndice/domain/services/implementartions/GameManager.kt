@@ -1,6 +1,6 @@
 package com.aeax.smndice.domain.services.implementartions
 
-import com.aeax.smndice.domain.models.Game
+import com.aeax.smndice.domain.models.game.Game
 import com.aeax.smndice.domain.services.interfaces.IGameManager
 import kotlin.random.Random
 

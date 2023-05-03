@@ -1,6 +1,6 @@
 package com.aeax.smndice.domain.services.interfaces
 
-import com.aeax.smndice.domain.models.Game
+import com.aeax.smndice.domain.models.game.Game
 
 interface IGameManager {
     fun initGame()

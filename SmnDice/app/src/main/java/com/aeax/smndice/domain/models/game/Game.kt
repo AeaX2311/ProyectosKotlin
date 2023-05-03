@@ -1,4 +1,4 @@
-package com.aeax.smndice.domain.models
+package com.aeax.smndice.domain.models.game
 
 class Game(
     var playerName: String = "",

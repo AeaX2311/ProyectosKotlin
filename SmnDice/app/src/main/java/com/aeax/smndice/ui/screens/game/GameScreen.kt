@@ -18,13 +18,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aeax.smndice.R
 import com.aeax.smndice.domain.providers.LocalGlobalProvider
 import com.aeax.smndice.ui.components.*
+import com.aeax.smndice.ui.navigator.Screens
+import com.aeax.smndice.ui.screens.scoreboard.ScoreboardViewModel
 import com.aeax.smndice.ui.theme.*
 import kotlinx.coroutines.delay
 
 @Composable
-fun SmnDiceGameScreen() {
+fun GameScreen() {
     val gameViewModel: GameViewModel = hiltViewModel()
+
     val context = LocalContext.current
+    val gp = LocalGlobalProvider.current
+    val navController = gp.navController
 
     val currentGame by remember { mutableStateOf(gameViewModel.getGame()) } //Datos del juego actual
     var contadorIndice by remember { mutableStateOf(-1) } //Del patron automatico
@@ -148,15 +153,20 @@ fun SmnDiceGameScreen() {
             )
         }
 
-//        Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
-//        Text(
-//            text = "" + currentGame.level + " Puntos",
-//            color = Color.White,
-//            modifier = Modifier.fillMaxWidth(),
-//            textAlign = TextAlign.Center,
-//            fontSize = 35.sp
-//        )
         Divider(startIndent = 8.dp, thickness = 20.dp, color = Fondo)
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            MiBotonAccion(
+                texto = "Lista de scores",
+                habilitado = !ejecutandoJuego && !esperandoRespuestaJugador,
+                onStart = {
+                    navController.navigate(Screens.ScoreboardScreen.route)
+                }
+            )
+        }
     }
 }
 /**
