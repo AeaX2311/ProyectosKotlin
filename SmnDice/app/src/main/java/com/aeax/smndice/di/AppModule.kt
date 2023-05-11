@@ -21,7 +21,8 @@ object AppModule {
     @Singleton
     fun provideGameManager(): IGameManager = GameManager()
 
-    @Provides @Singleton fun provideMoshi(): Moshi =
+    @Provides @Singleton
+    fun provideMoshi(): Moshi =
         Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
     @Provides
@@ -34,8 +35,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideApiRepository(
-        apiManager: IApiManager
+        apiManager: IApiManager,
+        moshi: Moshi
     ) :ApiRepository = ApiRepository(
-        apiManager = apiManager
+        apiManager = apiManager,
+        moshi = moshi
     )
 }
