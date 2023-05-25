@@ -1,8 +1,10 @@
 package com.aeax.notificaciontest.di
 
 import android.content.Context
-import androidx.core.app.NotificationCompat
-import com.aeax.notificaciontest.R
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.aeax.notificaciontest.domain.services.implementations.NotificationService
+import com.aeax.notificaciontest.domain.services.interfaces.INotificationService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,13 +15,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-//    @Provides
-//    @Singleton
-//    fun provideNotificationBuilder(@ApplicationContext context :Context) =
-//        NotificationCompat.Builder(context, CHANNEL_ID)
-//            .setSmallIcon(R.drawable.notification_icon)
-//            .setContentTitle("Notificacion prueba")
-//            .setContentText("Esto es una prueba de notificacion")
-//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+    @Provides
+    @Singleton
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun provideNotificationManager(@ApplicationContext context: Context): INotificationService =
+        NotificationService(context)
 }

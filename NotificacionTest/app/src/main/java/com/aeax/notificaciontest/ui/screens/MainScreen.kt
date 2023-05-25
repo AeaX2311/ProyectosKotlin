@@ -10,12 +10,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun MainScreen() {
-    val vm : MainScreenViewModel = hiltViewModel()
+    val vm :MainScreenViewModel = hiltViewModel()
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Button(onClick = { vm.showNotification() }) {
+        Button(
+            onClick = {
+                vm.showNotification(
+                    title = "Notificacion de prueba",
+                    content = "Esto es una notificacion de prueba",
+                )
+            }
+        ) {
             Text(text = "Mostrar notificacion")
         }
     }
