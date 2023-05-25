@@ -2,11 +2,16 @@ package com.aeax.smndice.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 
-
+private val DarkColorPalette = lightColors(
+    primary = FondoSecundarioD,
+    primaryVariant = Fondo2D,
+    secondary = FondoD
+)
 
 private val LightColorPalette = lightColors(
     primary = FondoSecundario,
@@ -16,10 +21,11 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun SmnDiceTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = LightColorPalette
+    val lightColors = LightColorPalette
+    val darkColors = DarkColorPalette
 
     MaterialTheme(
-        colors = colors,
+        colors = if (darkTheme) darkColors else lightColors,
         typography = Typography,
         shapes = Shapes,
         content = content

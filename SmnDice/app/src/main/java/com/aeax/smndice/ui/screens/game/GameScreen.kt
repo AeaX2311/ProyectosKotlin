@@ -39,6 +39,8 @@ fun GameScreen() {
     var respuestaJugador by remember { mutableStateOf("") } //Secuencia String de clicks por usuario
     var padFondo by remember { mutableStateOf(Black) } //Fondo para el pad, cambia cuando termina un nivel
 
+    val isDarkTheme = gameViewModel.uiTheme.collectAsState().value
+
     LaunchedEffect(contadorIndice) {
         if (ejecutandoJuego) { //Si se esta ejecutando el patron automatico
             determinarAudioEjecutar(
@@ -107,9 +109,14 @@ fun GameScreen() {
             Text(
                 text = "Nivel ${currentGame.level}",
                 color = Color.White,
-                modifier = Modifier.fillMaxWidth().background(
-                    FondoSecundario
-                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        if (isDarkTheme)
+                            FondoSecundarioD
+                        else
+                            FondoSecundario
+                    ),
                 textAlign = TextAlign.Center,
                 fontSize = 47.sp
             )
@@ -165,6 +172,16 @@ fun GameScreen() {
                 onStart = {
                     navController.navigate(Screens.ScoreboardScreen.route)
                 }
+            )
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Switch(
+                checked = isDarkTheme,
+                onCheckedChange = { gameViewModel.setThemeConfig(it) }
             )
         }
     }

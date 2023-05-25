@@ -50,8 +50,6 @@ class ApiRepository @Inject constructor(
         val socket = SocketHandler.getSocket()
         socket.emit("newTop",playerToJson(myPlayer))
         emit(_players.value)
-
-//        emit(apiManager.postScore(PostRequest(dataPost = DataPost(player.level, player.name, player.score))))
     }.flowOn(Dispatchers.IO)
 
     fun listenNewTopPlayer(): Flow<Player> = channelFlow {

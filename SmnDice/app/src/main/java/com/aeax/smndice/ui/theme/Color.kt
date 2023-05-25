@@ -3,9 +3,13 @@ package com.aeax.smndice.ui.theme
 import androidx.compose.ui.graphics.Color
 
 //val Fondo = Color(0xFF282C34)
-val Fondo = Color(0xFF054456)
-val Fondo2 = Color(0xFF23DCFF)
-val FondoSecundario = Color(0xFF1AA1BA)
+val Fondo = Color(0xFF9BC6D3)
+val Fondo2 = Color(0xFF153C44)
+val FondoSecundario = Color(0xFF4EA1B1)
+
+val FondoD = Color(0xFF032F3C)
+val Fondo2D = Color(0xFF0A6374)
+val FondoSecundarioD = Color(0xFF05434E)
 
 val RojoOn = Color(0xFFFF1E06)
 val RojoOff = Color(0xFF4F0E07)

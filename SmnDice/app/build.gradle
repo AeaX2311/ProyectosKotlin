@@ -19,6 +19,14 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments += [
+                        "room.schemaLocation": "$projectDir/schemas".toString()
+                ]
+            }
+        }
     }
 
     buildTypes {
@@ -27,6 +35,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -49,6 +58,7 @@ android {
 
 dependencies {
     def nav_version = "2.5.3"
+    def room_version = "2.5.1"
 
     implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
@@ -86,6 +96,15 @@ dependencies {
 
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0'
+    implementation 'androidx.datastore:datastore-preferences-rxjava2:1.0.0'
+
+
+    kapt("androidx.room:room-compiler:$room_version")
 }
 
 kapt {

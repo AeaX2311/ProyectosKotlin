@@ -13,8 +13,6 @@ import javax.inject.Inject
 class ScoreboardViewModel @Inject constructor(
     private val apiRepository: ApiRepository
 ) : ViewModel() {
-    val scores: Flow<List<Player>> = apiRepository.players
-
     private val _state = MutableStateFlow<ScoreboardState>(ScoreboardState.Loading)
     val state: StateFlow<ScoreboardState> = _state
 
@@ -48,12 +46,6 @@ class ScoreboardViewModel @Inject constructor(
             }.collect {
                 _state.value = ScoreboardState.Success(it)
             }
-
-            //Agregar el nuevo valor (score respuesta) en todos mis scores
-//                val newList = _scoreList.value.toMutableList()
-//                newList.add(Player(it.dataNative.id, player.name, player.score, player.level))
-//                _scoreList.value = newList
-//            getAllScores()
         }
     }
 
@@ -68,7 +60,6 @@ class ScoreboardViewModel @Inject constructor(
     private fun listenNewTop() {
         viewModelScope.launch {
             apiRepository.listenNewTopPlayer().collect {
-                //No hacer nada, solo imprimir
                 println("New top player: $it")
             }
         }

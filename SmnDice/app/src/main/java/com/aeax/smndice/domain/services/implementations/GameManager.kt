@@ -1,4 +1,4 @@
-package com.aeax.smndice.domain.services.implementartions
+package com.aeax.smndice.domain.services.implementations
 
 import com.aeax.smndice.domain.models.game.Game
 import com.aeax.smndice.domain.services.interfaces.IGameManager
